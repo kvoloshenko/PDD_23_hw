@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+
+{% block title%}Результаты{% endblock %}
+
+{% block content %}
+    <h1>История запросов</h1>
+    <h3>Ключевые слова:</h3>
+
+ {% for request in requests %}
+       <a class="nav-link" href="/result/{{ request.id }}/">{{ request.keywords }}  {{ request.id }}</a>
+ {% endfor %}
+<!--table - таблица, tr-строка, td-столбец, th-заголовок-->
+<br><br>
+
+{% endblock %}
+
+<div class="alert alert-success" role="alert">
+<p>
+    {% block jok%}Пока компьютеры не умеют мыслить самостоятельно, им можно доверять{% endblock %}
+</p>
+</div>
