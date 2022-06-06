@@ -10,10 +10,16 @@
         <tr>
             <th>id</th>
             <th>Ключевые слова</th>
+            <th>Дата создания</th>
+            <th>Дата изменения</th>
+            <th>Пользователь</th>
         </tr>
         <tr>
             <td>{{object.id}}</td>
             <td>{{object.keywords}}</td>
+            <td>{{object.create}}</td>
+            <td>{{object.update}}</td>
+            <td>{{object.user}}</td>
         </tr>
     </table>
             <a class="btn btn-secondary" href="{% url 'blog:req_update' pk=object.id %}">Изменить</a>
