@@ -1,6 +1,18 @@
 # PDD_23_hw
 Python: Django, Users. registration, authorization, rights system
 
+## update 2022.06.06
+Implemented user model: added new aplication 'usersapp'.
+
+The menu item “Data management” (req_list.html) is available only for logged in users.
+
+If user attribute is_dbAdmin = True than it’s possible to change data at the pages:
+
+* req_detail.html
+* req_update.html
+* req_create.html
+* req_delete.html
+
 ## Project
 Project name is kvblog.
 
