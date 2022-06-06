@@ -1,4 +1,6 @@
+from django.contrib.auth.decorators import login_required, user_passes_test
 from django.shortcuts import render, get_object_or_404, HttpResponseRedirect
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 from blogapp.models import Hh_Response, Hh_Request
 from blogapp.forms import Hh_Search_Form
@@ -50,7 +52,9 @@ def create_form(request):
         # pprint.pprint(result)
         keywords = result[0]['keywords']
         # print(f'keywords={keywords}')
-        Hh_Request.objects.create(keywords = keywords)
+        current_user = request.user
+        # print(type(current_user),f'current_user={current_user}')
+        Hh_Request.objects.create(keywords = keywords, user = current_user)
         last_request = Hh_Request.objects.last()
         # print(f'last_request.id = {last_request.id}')
 
@@ -80,17 +84,25 @@ def create_contacts(request):
 
 # CRUD CREATE, READ (LIST, DETAIL), UPDATE, DELETE
 # Read List: Список запросов
-class Hh_RequestListView(ListView):
+# Важно LoginRequiredMixin - он должен идти 1-ым
+class Hh_RequestListView(LoginRequiredMixin, ListView):
     model = Hh_Request
     template_name = 'blogapp/req_list.html'
 
+    def test_func(self):
+        # return self.request.user.is_superuser
+        return self.request.user.is_dbAdmin
+
     def get_queryset(self):
+        user = self.request.user
         """
         Получение данных
         :return:
         """
+        # print(f'self.test_func()={self.test_func()}')
         # return Hh_Request.objects.all()
         return Hh_Request.objects.order_by('id').reverse()
+
 
 class ResponsesContextMixin(ContextMixin):
     def get_context_data(self, *args, **kwargs):
@@ -107,26 +119,38 @@ class ResponsesContextMixin(ContextMixin):
         return context
 
 # Read Detail
-class Hh_RequestDetailView(DetailView, ResponsesContextMixin):
+class Hh_RequestDetailView(UserPassesTestMixin, DetailView, ResponsesContextMixin):
     model = Hh_Request
     template_name = 'blogapp/req_detail.html'
+    def test_func(self):
+        # return self.request.user.is_superuser
+        return self.request.user.is_dbAdmin
+
 # Create
-class  Hh_RequestCreateView(CreateView):
+class  Hh_RequestCreateView(UserPassesTestMixin, CreateView):
     fields = '__all__'
     model = Hh_Request
     success_url = reverse_lazy('blog:req_list')
     template_name = 'blogapp/req_create.html'
-
+    def test_func(self):
+        # return self.request.user.is_superuser
+        return self.request.user.is_dbAdmin
 # Update
-class Hh_RequestUpdateView(UpdateView, ResponsesContextMixin):
+class Hh_RequestUpdateView(UserPassesTestMixin, UpdateView, ResponsesContextMixin):
     fields = '__all__'
     model = Hh_Request
     success_url = reverse_lazy('blog:req_list')
     template_name = 'blogapp/req_update.html'
+    def test_func(self):
+        # return self.request.user.is_superuser
+        return self.request.user.is_dbAdmin
+
 # Delete
-class Hh_RequestDeleteView(DeleteView):
+class Hh_RequestDeleteView(UserPassesTestMixin, DeleteView):
     fields = '__all__'
     model = Hh_Request
     success_url = reverse_lazy('blog:req_list')
     template_name = 'blogapp/req_delete.html'
-
+    def test_func(self):
+        # return self.request.user.is_superuser
+        return self.request.user.is_dbAdmin
